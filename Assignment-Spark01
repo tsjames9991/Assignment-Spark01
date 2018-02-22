@@ -1,0 +1,50 @@
+
+scala> val line = "Hello, World"
+line: String = Hello, World
+
+scala> val rdd = sc.parallelize(List(line))
+rdd: org.apache.spark.rdd.RDD[String] = ParallelCollectionRDD[0] at parallelize at <console>:26
+
+scala> val rdd1 = sc.parallelize(List(1,1,2,2,3,3,4,4).distinct)
+rdd1: org.apache.spark.rdd.RDD[Int] = ParallelCollectionRDD[1] at parallelize at <console>:24
+
+scala> val rdd2 = sc.parallelize(List(1,2,3,4))
+rdd2: org.apache.spark.rdd.RDD[Int] = ParallelCollectionRDD[2] at parallelize at <console>:24
+
+scala> val result = rdd1.zip(rdd2)
+result: org.apache.spark.rdd.RDD[(Int, Int)] = ZippedPartitionsRDD2[3] at zip at <console>:28
+
+scala> result.collect
+res0: Array[(Int, Int)] = Array((1,1), (2,2), (3,3), (4,4))  
+
+scala> val input = sc.textFile("/home/knoldus/Input.txt")
+input: org.apache.spark.rdd.RDD[String] = /home/knoldus/Input.txt MapPartitionsRDD[1] at textFile at <console>:24
+
+scala> val regex = """\w{3}\s\d{2},\s\d{4}|\d{2}\s\w{3},\s\d{4}|\d{1}\/\d{2}\/\d{4}|\d{2}-\d{2}-\d{4}""".r
+regex: scala.util.matching.Regex = \w{3}\s\d{2},\s\d{4}|\d{2}\s\w{3},\s\d{4}|\d{1}\/\d{2}\/\d{4}|\d{2}-\d{2}-\d{4}
+
+scala> val breaker = input.map(record => record.split('|'))
+breaker: org.apache.spark.rdd.RDD[Array[String]] = MapPartitionsRDD[2] at map at <console>:26
+
+scala> val accepted = breaker.filter(array => (regex.pattern.matcher(array(1)).matches))
+accepted: org.apache.spark.rdd.RDD[Array[String]] = MapPartitionsRDD[3] at filter at <console>:30
+
+scala> val rejected = breaker.filter(array => !(regex.pattern.matcher(array(1)).matches))
+rejected: org.apache.spark.rdd.RDD[Array[String]] = MapPartitionsRDD[4] at filter at <console>:30
+
+val acceptedPartition = accepted.map{
+     array => array.foldLeft("")((start, element)=> start+ " " + element)
+}.saveAsTextFile("output/Accepted.txt")
+
+// Exiting paste mode, now interpreting.
+
+acceptedPartition: Unit = ()
+
+val rejectedPartition = accepted.map{
+     array => array.foldLeft("")((start, element)=> start+ " " + element)
+}.saveAsTextFile("output/Rejected.txt")
+
+// Exiting paste mode, now interpreting.
+
+rejectedPartition: Unit = ()
+
