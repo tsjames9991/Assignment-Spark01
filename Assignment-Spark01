@@ -1,9 +1,13 @@
-
+									Output 1 : -
+-------------------------------------------------------------------------------------------------------------------------------------------------------
 scala> val line = "Hello, World"
 line: String = Hello, World
 
 scala> val rdd = sc.parallelize(List(line))
 rdd: org.apache.spark.rdd.RDD[String] = ParallelCollectionRDD[0] at parallelize at <console>:26
+
+									Output 2 : -
+-------------------------------------------------------------------------------------------------------------------------------------------------------
 
 scala> val rdd1 = sc.parallelize(List(1,1,2,2,3,3,4,4).distinct)
 rdd1: org.apache.spark.rdd.RDD[Int] = ParallelCollectionRDD[1] at parallelize at <console>:24
@@ -16,6 +20,9 @@ result: org.apache.spark.rdd.RDD[(Int, Int)] = ZippedPartitionsRDD2[3] at zip at
 
 scala> result.collect
 res0: Array[(Int, Int)] = Array((1,1), (2,2), (3,3), (4,4))  
+
+									Output 2 : -
+-------------------------------------------------------------------------------------------------------------------------------------------------------
 
 scala> val input = sc.textFile("/home/knoldus/Input.txt")
 input: org.apache.spark.rdd.RDD[String] = /home/knoldus/Input.txt MapPartitionsRDD[1] at textFile at <console>:24
